@@ -14,6 +14,7 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     email: {
         type: String,
+        unique: true,
         required: [true, 'Email is required']
     },
     password: {
@@ -24,7 +25,11 @@ const userSchema = new Schema({
         type: String,
         enum: ['admin', 'faculty', 'student'],
         required: true
+    },
+    validated:{
+        type: Boolean,
+        default: false
     }
 });
 
-const User = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);
