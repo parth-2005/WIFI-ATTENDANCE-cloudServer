@@ -1,0 +1,36 @@
+{
+  "name": "cloudserver",
+  "version": "1.0.0",
+  "description": "This will serve as cloud server to communicate between Local System and Website.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parth-2005/WIFI-ATTENDANCE-cloudServer.git"
+  },
+  "author": "Parth Panot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/parth-2005/WIFI-ATTENDANCE-cloudServer/issues"
+  },
+  "homepage": "https://github.com/parth-2005/WIFI-ATTENDANCE-cloudServer#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "helmet": "^7.1.0",
+    "mongoose": "^8.6.3",
+    "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "winston": "^3.14.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.7",
+    "supertest": "^7.0.0"
+  }
+}
