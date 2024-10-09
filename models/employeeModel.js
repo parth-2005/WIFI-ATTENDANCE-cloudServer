@@ -1,31 +1,30 @@
 /*
 
-Students
+Employee
 _id: ObjectId
 user: ObjectId<User>
+uId: String
 name: String
-batch: ObjectId<Batch>
 
 */
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const studentSchema = new Schema({
+const employeeSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    name: {
+    uId:{
         type: String,
         required: true
     },
-    batch: {
-        type: Schema.Types.ObjectId,
-        ref: 'Batch',
+    name: {
+        type: String,
         required: true
     }
 });
 
-module.exports = mongoose.model('Student', studentSchema);
+module.exports = mongoose.model('Employee', employeeSchema);

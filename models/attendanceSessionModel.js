@@ -2,11 +2,8 @@
 
 AttendanceSession
 _id: ObjectId
-course: ObjectId<Course>
-batch: ObjectId<Batch>
-class: ObjectId<Class>
-teacher: ObjectId<Teacher>
-date: DateTimestamp
+adminId: ObjectId<Admin>
+dateTime: DateTimestamp
 
 */
 
@@ -14,30 +11,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const attendanceSessionSchema = new Schema({
-    course: {
+    adminId: {
         type: Schema.Types.ObjectId,
-        ref: 'Course',
+        ref: 'Admin',
         required: true
     },
-    batch: {
-        type: Schema.Types.ObjectId,
-        ref: 'Batch',
-        required: true
-    },
-    class: {
-        type: Schema.Types.ObjectId,
-        ref: 'Class',
-        required: true
-    },
-    teacher: {
-        type: Schema.Types.ObjectId,
-        ref: 'Teacher',
-        required: true
-    },
-    date: {
+    dateTime: {
         type: Date,
         required: true
     }
 });
-
-module.exports = mongoose.model('AttendanceSession', attendanceSessionSchema);

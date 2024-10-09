@@ -3,7 +3,7 @@
 AttendanceRecord
 _id: ObjectId
 session: ObjectId<AttendanceSession>
-student: ObjectId<Student>
+employee: ObjectId<Employee>
 status: enum ['present', 'absent']
 
 */
@@ -17,9 +17,9 @@ const attendanceRecordSchema = new Schema({
         ref: 'AttendanceSession',
         required: true
     },
-    student: {
+    employee: {
         type: Schema.Types.ObjectId,
-        ref: 'Student',
+        ref: 'Employee',
         required: true
     },
     status: {

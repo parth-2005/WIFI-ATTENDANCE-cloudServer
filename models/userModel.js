@@ -23,13 +23,21 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'faculty', 'student'],
+        enum: ['admin', 'employee'],
         required: true
     },
-    validated:{
+    verified:{
         type: Boolean,
-        default: false
-    }
+        default: false,
+        required: true
+    },
+    verificationToken:{
+        type: String,
+        required: true
+    },
+    resetToken:{
+        type: String
+    },
 });
 
 module.exports = mongoose.model('User', userSchema);
