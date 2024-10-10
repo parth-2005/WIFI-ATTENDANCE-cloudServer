@@ -15,11 +15,13 @@ const employeeSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
+        unique: true
     },
     uId:{
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     name: {
         type: String,

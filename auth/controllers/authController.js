@@ -52,7 +52,13 @@ const login = async (req, res) => {
                 message: 'Invalid credentials'
             });
         }
-        const token = jwt.sign({ email: existingUser.email, role: existingUser.role }, process.env.JWT_SECRET, { expiresIn: '1w' });
+        if (!existingUser.verified) {
+            return res.status(400).json({
+                message: 'Email not verified'
+            });
+        }
+        // userid as payload
+        const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(200).json({
             message: 'Login successful',
             token
