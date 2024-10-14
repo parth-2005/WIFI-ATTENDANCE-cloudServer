@@ -71,6 +71,45 @@ const login = async (req, res) => {
     }
 };
 
+const adminLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password, Salt);
+        if (!isPasswordCorrect) {
+            return res.status(400).json({
+                message: 'Invalid credentials'
+            });
+        }
+        if (!existingUser.verified) {
+            return res.status(400).json({
+                message: 'Email not verified'
+            });
+        }
+        if (existingUser.role !== 'admin') {
+            return res.status(400).json({
+                message: 'Not authorized as admin'
+            });
+        }
+        // userid as payload
+        const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({
+            message: 'Login successful',
+            token
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
 const logout = async (req, res) => {
     res.status(200).json({
         message: 'Logout successful'
@@ -181,4 +220,4 @@ const resetPassword = async (req, res) => {
     }
 };
 
-module.exports = { register, login, logout, verify, resendVerification, forgotPassword, resetPassword };
+module.exports = { register, login, adminLogin, logout, verify, resendVerification, forgotPassword, resetPassword };

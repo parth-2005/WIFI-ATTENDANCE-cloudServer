@@ -26,6 +26,10 @@ const employeeSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    macId: {
+        type: String,
+        required: true
     }
 });
 
