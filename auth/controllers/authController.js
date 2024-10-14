@@ -1,18 +1,15 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { encryptPassword, comparePassword, generateToken, verifyToken } = require('../../utils/encryption');
 const User = require('../../models/userModel');
 const { sendMail } = require('../../utils/mailService');
-
 require('dotenv').config();
-
-const Salt = Number(process.env.ENCRYPT_KEY)
 
 const register = async (req, res) => {
     try {
         const { email, password, role } = req.body;
-        const hashedPassword = await bcrypt.hash(password, Salt);
 
-        const verificationToken = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const hashedPassword = await encryptPassword(password);
+
+        const verificationToken = generateToken({ email });
 
         const newUser = new User({
             email,
@@ -23,7 +20,7 @@ const register = async (req, res) => {
         });
         await newUser.save();
 
-        const verificationLink =  'http://127.0.0.1:3000/api/v1/auth/verify/' + verificationToken;
+        const verificationLink =  process.env.VERIFICATION_LINK + verificationToken;
 
         sendMail(email, 'Verify your email', 'verification', { verificationLink });
 
@@ -46,7 +43,7 @@ const login = async (req, res) => {
                 message: 'User not found'
             });
         }
-        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password, Salt);
+        const isPasswordCorrect = await comparePassword(password, existingUser.password);
         if (!isPasswordCorrect) {
             return res.status(400).json({
                 message: 'Invalid credentials'
@@ -58,7 +55,7 @@ const login = async (req, res) => {
             });
         }
         // userid as payload
-        const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = generateToken({ id: existingUser._id });
         res.status(200).json({
             message: 'Login successful',
             token
@@ -80,7 +77,7 @@ const adminLogin = async (req, res) => {
                 message: 'User not found'
             });
         }
-        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password, Salt);
+        const isPasswordCorrect = await comparePassword(password, existingUser.password);
         if (!isPasswordCorrect) {
             return res.status(400).json({
                 message: 'Invalid credentials'
@@ -97,7 +94,7 @@ const adminLogin = async (req, res) => {
             });
         }
         // userid as payload
-        const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = generateToken({ id: existingUser._id });
         res.status(200).json({
             message: 'Login successful',
             token
@@ -119,7 +116,7 @@ const logout = async (req, res) => {
 const verify = async (req, res) => {
     try {
         const token = req.params.token;
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = verifyToken(token);
         const user = await User.findOne({ email: decoded.email });
         if (!user) {
             return res.status(404).json({
@@ -153,10 +150,10 @@ const resendVerification = async (req, res) => {
                 message: 'Email already verified'
             });
         }
-        const verificationToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const verificationToken = generateToken({ email: user.email });
         user.verificationToken = verificationToken;
         await user.save();
-        const verificationLink = process.env.URL + '/api/v1/auth/verify/' + verificationToken;
+        const verificationLink = process.env.VERIFICATION_LINK + verificationToken;
         sendMail(email, 'Verify your email', 'verification', { verificationLink });
         res.status(200).json({
             message: 'Verification link sent successfully'
@@ -178,10 +175,10 @@ const forgotPassword = async (req, res) => {
                 message: 'User not found'
             });
         }
-        const resetToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const resetToken = generateToken({ email: user.email });
         user.resetToken = resetToken;
         await user.save();
-        const resetLink = process.env.URL + '/api/v1/auth/reset/' + resetToken;
+        const resetLink = process.env.RESET_LINK + resetToken;
         sendMail(email, 'Reset your password', 'reset', { resetLink });
         res.status(200).json({
             message: 'Reset link sent successfully'
@@ -197,7 +194,7 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
     try {
         const token = req.params.token;
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = verifyToken(token);
         const user = await User.findOne({ email: decoded.email });
         if (!user) {
             return res.status(404).json({
@@ -205,7 +202,7 @@ const resetPassword = async (req, res) => {
             });
         }
         const { password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, Salt);
+        const hashedPassword = await encryptPassword(password);
         user.password = hashedPassword;
         user.resetToken = null;
         await user.save();

@@ -1,5 +1,5 @@
 // create authentification middleware
-const jwt = require('jsonwebtoken');
+const { encryptPassword, comparePassword, generateToken, verifyToken } = require('../../utils/encryption');
 const User = require('../../models/userModel');
 
 const authMiddleware = async (req, res, next) => {
@@ -9,7 +9,7 @@ const authMiddleware = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({ msg: 'No token, authorization denied' });
         }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = verifyToken(token);
         const user = await User.findById(decoded.id);
         if (!user) {
             return res.status(401).json({ msg: 'Token is not valid' });
@@ -28,7 +28,7 @@ const adminMiddleware = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({ msg: 'No token, authorization denied' });
         }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = verifyToken(token);
         const user = await User.findById(decoded.id);
         if (!user) {
             return res.status(401).json({ msg: 'Token is not valid' });
